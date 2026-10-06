@@ -1,0 +1,15 @@
+{
+  "name": "Regras - Ordem Paranormal",
+  "version": "1.0.0",
+  "manifest_version": 1,
+  "description": "Leitor com as páginas de regras mais usadas na mesa (combate, perícias, rituais, condições, interlúdio).",
+  "author": "Seu Nome",
+  "icon": "https://emixiszao.github.io/regras-owlbear/icon.svg",
+  "action": {
+    "title": "Regras",
+    "icon": "https://emixiszao.github.io/regras-owlbear/icon.svg",
+    "popover": "https://emixiszao.github.io/regras-owlbear/index.html",
+    "width": 300,
+    "height": 230
+  }
+}

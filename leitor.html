@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Regras</title>
+<style>
+  html, body { margin:0; height:100%; background:#14171f; color:#e8e6f0; font-family:system-ui,sans-serif; }
+  #barra { position:sticky; top:0; z-index:5; display:flex; gap:8px; align-items:center; justify-content:center;
+           padding:8px; background:#1e2231; border-bottom:1px solid #333a52; }
+  #barra button { border:0; border-radius:6px; padding:6px 12px; background:#3a4260; color:#fff; font-size:14px; cursor:pointer; }
+  #barra button:hover { filter:brightness(1.2); }
+  #barra input { width:52px; padding:5px; text-align:center; border-radius:6px; border:1px solid #444b66; background:#14171f; color:#e8e6f0; }
+  #info { font-size:13px; color:#9aa0b8; }
+  #paginas { padding:12px 0 40px; }
+  canvas { display:block; margin:0 auto 14px; max-width:100%; box-shadow:0 2px 12px #000a; background:#fff; }
+  #status { text-align:center; padding:30px; color:#9aa0b8; }
+</style>
+</head>
+<body>
+  <div id="barra">
+    <button id="menos">−</button><button id="mais">+</button>
+    <span id="info">Pág.</span>
+    <input id="ir" type="number" min="1" value="1">
+    <button id="vai">Ir</button>
+  </div>
+  <div id="status">Carregando livro…</div>
+  <div id="paginas"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(async () => {
+  const PDF_URL = "regras.pdf";
+  const WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  const cont = document.getElementById("paginas");
+  const status = document.getElementById("status");
+  const info = document.getElementById("info");
+  let pdf, largura = 0.95; // fração da largura da janela
+  let renderId = 0;
+
+  try {
+    const blob = await (await fetch(WORKER)).blob();
+    pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
+  } catch (e) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER;
+  }
+
+  async function renderTudo() {
+    const meuId = ++renderId;
+    cont.innerHTML = "";
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const alvo = Math.min(window.innerWidth * largura, 1100);
+    for (let n = 1; n <= pdf.numPages; n++) {
+      const page = await pdf.getPage(n);
+      if (meuId !== renderId) return;
+      const base = page.getViewport({ scale: 1 });
+      const escala = (alvo / base.width) * dpr;
+      const vp = page.getViewport({ scale: escala });
+      const c = document.createElement("canvas");
+      c.id = "p" + n;
+      c.width = vp.width; c.height = vp.height;
+      c.style.width = (vp.width / dpr) + "px";
+      c.style.height = (vp.height / dpr) + "px";
+      cont.appendChild(c);
+      await page.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise;
+      status.style.display = "none";
+    }
+  }
+
+  try {
+    pdf = await pdfjsLib.getDocument(PDF_URL).promise;
+    info.textContent = pdf.numPages + " páginas";
+    document.getElementById("ir").max = pdf.numPages;
+    await renderTudo();
+  } catch (e) {
+    status.textContent = "Não foi possível carregar o livro. Confira se o arquivo regras.pdf está no repositório.";
+    console.error(e);
+    return;
+  }
+
+  document.getElementById("mais").onclick = () => { largura = Math.min(largura + 0.2, 2.2); renderTudo(); };
+  document.getElementById("menos").onclick = () => { largura = Math.max(largura - 0.2, 0.4); renderTudo(); };
+  const ir = () => {
+    const n = Math.min(Math.max(parseInt(document.getElementById("ir").value, 10) || 1, 1), pdf.numPages);
+    document.getElementById("p" + n)?.scrollIntoView({ behavior: "smooth" });
+  };
+  document.getElementById("vai").onclick = ir;
+  document.getElementById("ir").addEventListener("keydown", e => { if (e.key === "Enter") ir(); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Regras</title>
+<style>
+  :root { --bg:#1e2231; --text:#e8e6f0; --muted:#9aa0b8; --accent:#a64848; --alt:#3a4260; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:16px; background:var(--bg); color:var(--text); font-family:system-ui,sans-serif; text-align:center; }
+  h1 { margin:0 0 4px; font-size:16px; }
+  p { margin:0 0 14px; font-size:12px; color:var(--muted); }
+  button { display:block; width:100%; margin-bottom:8px; padding:11px; border:0; border-radius:8px; font-size:14px; font-weight:600; color:#fff; cursor:pointer; }
+  button:hover { filter:brightness(1.15); }
+  #ler { background:var(--accent); }
+  #aba { background:var(--alt); }
+</style>
+</head>
+<body>
+  <h1>Regras — Ordem Paranormal</h1>
+  <p>Combate, perícias, rituais, condições e interlúdio</p>
+  <button id="ler">Abrir livro de regras</button>
+  <button id="aba">Abrir em nova aba</button>
+
+<script type="module">
+import OBR from "https://esm.sh/@owlbear-rodeo/sdk@3";
+const BASE = "https://emixiszao.github.io/regras-owlbear/";
+
+OBR.onReady(() => {
+  document.getElementById("ler").addEventListener("click", () => {
+    OBR.modal.open({
+      id: "com.regras.ordem/modal",
+      url: BASE + "leitor.html",
+      width: 900,
+      height: 760,
+      hideBackdrop: true
+    });
+  });
+  document.getElementById("aba").addEventListener("click", () => {
+    window.open(BASE + "leitor.html", "_blank", "noopener");
+  });
+});
+</script>
+</body>
+</html>
