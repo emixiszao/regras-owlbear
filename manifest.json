@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "manifest_version": 1,
   "description": "Leitor com as páginas de regras mais usadas na mesa (combate, perícias, rituais, condições, interlúdio).",
-  "author": "Seu Nome",
+  "author": "@mestremxrpg no Youtube",
   "icon": "https://emixiszao.github.io/regras-owlbear/icon.svg",
   "action": {
     "title": "Regras",
